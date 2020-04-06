@@ -33,17 +33,16 @@ public class RewardServiceImpl implements RewardService {
 
 	@Override
 	public RewardDocument processRewards(RetailDocument retailDocument) throws RewardProcessingException {
+			RewardDocument rewardDocument = null;
+			List<RetailCustomer> retailCustomers = retailDocument.getRetailCustomers();
 
-		RewardDocument rewardDocument = null;
-		List<RetailCustomer> retailCustomers = retailDocument.getRetailCustomers();
+			List<CustomerRewards> customerRewardsList = retailCustomers.stream()
+					.map(customer -> getCustomerRewardPoints(customer)).collect(Collectors.toList());
 
-		List<CustomerRewards> customerRewardsList = retailCustomers.stream()
-				.map(customer -> getCustomerRewardPoints(customer)).collect(Collectors.toList());
+			rewardDocument = new RewardDocument();
+			rewardDocument.setCustomerRewardsList(customerRewardsList);
 
-		rewardDocument = new RewardDocument();
-		rewardDocument.setCustomerRewardsList(customerRewardsList);
-
-		return rewardDocument;
+			return rewardDocument;
 	}
 
 	public CustomerRewards getCustomerRewardPoints(RetailCustomer customer) {

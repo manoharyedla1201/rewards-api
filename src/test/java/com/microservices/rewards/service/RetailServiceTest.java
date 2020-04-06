@@ -25,6 +25,7 @@ import com.microservices.rewards.dto.RetailCustomer;
 import com.microservices.rewards.dto.RetailDocument;
 import com.microservices.rewards.dto.RetailTransaction;
 import com.microservices.rewards.dto.RewardDocument;
+import com.microservices.rewards.exception.RewardProcessingException;
 import com.microservices.rewards.service.RewardServiceImpl;
 import com.microservices.rewards.util.RewardUtil;
 
@@ -110,5 +111,19 @@ public class RetailServiceTest {
 		assertEquals(testCustomerRewards.getCustomerId(), customerRewards.getCustomerId());
 		verify(rewardUtil, times(2)).getTransactionRewards(any(RetailTransaction.class));
 		verify(rewardUtil, times(1)).setCustomerRewards(anyMap(), any(RetailCustomer.class));
+	}
+	
+	@Test(expected=RewardProcessingException.class)
+	public void testGetCustomerRewardPoints_noCustomerTransactions() {
+
+		CustomerRewards testCustomerRewards = new CustomerRewards();
+		testCustomerRewards.setCustomerId(customerId);
+		
+		List<RetailTransaction> retailTransactions = new ArrayList<RetailTransaction>();
+		
+		RetailCustomer retailCustomer = new RetailCustomer(customerId, retailTransactions);
+
+		rewardService.getCustomerRewardPoints(retailCustomer);
+		
 	}
 }
